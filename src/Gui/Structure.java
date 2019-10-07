@@ -6,13 +6,13 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import Constantes.Constante;
 import Gui.Transformers.Mapper;
-import Gui.Shapes;
 
 public class Structure {
-	private Point START = new Point(6,5);
-	private Point VSTART = new Point(25,20);
-	private List<String> design = new ArrayList<>(List.of("P", "A", "C", "M", "A", "N"));
+	private Point START = new Point(3,4);
+	private Point VSTART = new Point(15,10);
+	private List<String> design = new ArrayList<>(List.of("A"));
 	private Transformers transformer = new Transformers();
 	List<Mapper> customMap = new ArrayList<>();
 	
@@ -67,13 +67,31 @@ public class Structure {
 	
 	
 	public void drawStrucure(Graphics g, int size) {
-		g.setColor(Color.black);
-		drawDesigns(g, START, customMap, size);
-		drawDesigns(g, VSTART, transformer.getVersion(), size);
+		//g.setColor(Color.black);
+		//drawDesigns(g, START, customMap, size);
+		//drawDesigns(g, VSTART, transformer.getVersion(), size);
+		drawMap(g, size);
 	}
 	
-	public void generateMatrix() {
-		int[][] matrix = new int[2][2];
+	public void drawMap(Graphics g, int size) {
+		double scale = 0.3;
+		for(int i = 0; i < Constante.blocksMap.length; i++) {
+			for(int j = 0; j < Constante.blocksMap[i].length; j++) {
+				//Blocks
+				if(Constante.blocksMap[i][j] == 1) {
+					g.setColor(Color.black);
+					g.fillRect(j*size, i*size, size, size);
+				}else if(Constante.blocksMap[i][j] == 3) {
+					g.setColor(Color.red);
+					g.drawLine(j*size, i*size, (j+1)*size, i*size);
+				}
+				//Pacgomes
+				if(Constante.gomeMap[i][j] == 1) {
+					g.setColor(Color.blue);
+					g.fillOval((int) ((j+0.5)*size-scale), (int) ((i+0.5)*size-scale), (int) (size*scale), (int) (size*scale));
+				}
+			}
+		}
 	}
 	
 }

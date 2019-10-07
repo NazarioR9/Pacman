@@ -1,11 +1,6 @@
 package Gui;
-import Gui.Shapes;
-
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-
-import Gui.Lines;
 
 public class Transformers {
 	private List<Mapper> mapping = new ArrayList<>();
@@ -17,8 +12,8 @@ public class Transformers {
 		List<Shapes> s;
 		//A
 		s = new ArrayList<>();
-		s.add(new Shapes(Lines.TWO_VERTICAL, 2, 10, 0, 0, 4));
-		s.add(new Shapes(Lines.TWO_HORIZONTAL, 2, 4, 2, 0, 2));
+		s.add(new Shapes(Lines.TWO_VERTICAL, 1, 5, 0, 0, 2));
+		s.add(new Shapes(Lines.TWO_HORIZONTAL, 1, 2, 1, 0, 1));
 		mapping.add(new Mapper("A",s,9));
 		//C
 		s = new ArrayList<>();

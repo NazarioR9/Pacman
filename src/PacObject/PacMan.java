@@ -1,32 +1,67 @@
 package PacObject;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
-import java.util.List;
 
-import PacObject.AbstractCharacter.Movement;
+import Constantes.Constante;
+import Utilities.Direction;
+import Utilities.State;
+import Utilities.Utils;
 
 public class PacMan extends AbstractCharacter{
 	private int life;
-	private static Point START = new Point(700,330);
-	
 
-	public PacMan(List<Point> b) {
-		point = START;
+	public PacMan() {
+		START = new Point(Constante.PAC_START.x,Constante.PAC_START.y);
+		point = Utils.clonePoint(START);
 		movement = new Movement();
 		state = State.NORMAL;
-		velocity = 10;
-		bounds = b;
-		life = 3;
+		life = Constante.PAC_START_LIFE;
+		baseColor = Color.yellow.darker();
+		color = baseColor;
 	}
 	
 	@Override
 	public void move() {
-		if(movement.getCurrent() == Direction.UP) point.y-=velocity;
-		else if(movement.getCurrent() == Direction.DOWN) point.y+=velocity;
-		else if(movement.getCurrent() == Direction.LEFT) point.x-=velocity;
-		else if(movement.getCurrent() == Direction.RIGHT) point.x+=velocity;
-		checkBounds();
+		
+		int x = point.x;
+		int y = point.y;
+		
+		if(movement.getCurrent() == Direction.UP) y-=velocity;
+		else if(movement.getCurrent() == Direction.DOWN) y+=velocity;
+		else if(movement.getCurrent() == Direction.LEFT) x-=velocity;
+		else if(movement.getCurrent() == Direction.RIGHT) x+=velocity;
+		
+		if(checkBounds(x, y)) {
+			if(collision(x, y)) return;
+			point.x = x;
+			point.y = y;
+		}
+		
+		if(wraparound(x,y)) return;
+	}
+	
+	public void manage() {
+		if(unit > 0) {
+			unit--;
+			setColor(baseColor.brighter());
+		}
+		else {
+			this.changeState(State.NORMAL);
+			setColor(baseColor);
+		}
+	}
+	
+	public void specialState(State s) {
+		this.changeState(s);
+		this.unit = Constante.UNIT;
+	}
+	
+	@Override
+	public void back2Start() {
+		super.back2Start();
+		movement.setCurrent(Direction.NONE);
 	}
 	
 	public void addLife() {
@@ -35,7 +70,7 @@ public class PacMan extends AbstractCharacter{
 	public void loseLife() {
 		life--;
 	}
-	public void changeState(State s) {
+	private void changeState(State s) {
 		this.state = s;
 	}
 
@@ -54,18 +89,6 @@ public class PacMan extends AbstractCharacter{
 		else if(key == KeyEvent.VK_RIGHT) {this.movement.setNext(Direction.RIGHT);}
 		
 		this.checkToChangeDirection();
-		System.out.println(key);
-	}
-	
-	public void checkBounds() {
-		for(Point bound: this.bounds) {
-			if(bound.equals(this.point)) {
-				//this.setPoint(bound);
-				this.movement.setCurrent(this.movement.getNext());
-				this.movement.setNext(Direction.NONE);
-				break;
-			}
-		}
 	}
 
 }

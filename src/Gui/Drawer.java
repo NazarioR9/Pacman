@@ -3,75 +3,135 @@ package Gui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.util.List;
-import java.util.ArrayList;
+import java.awt.Polygon;
+
 import javax.swing.JPanel;
+
+import Constantes.Constante;
+import PacObject.PacMan;
+import Utilities.Direction;
 
 @SuppressWarnings("serial")
 public class Drawer extends JPanel{
-	private Structure structure = new Structure();
-	private Block block = new Block();
+	private final int s = Constante.BLOCK_SIZE;
 	private Point pacmanPoint = new Point();
-	private List<Block> blocks = new ArrayList<>();
-	//private Color[] colors = {Color.orange, Color.white, Color.green};
-	private int width = 800;
-	private int height = 350;
-	private int s = block.getSize();
-	private int nw = width/s;
-	private int nh = height/s;
+	private Point[] ghostPoint = new Point[Constante.NUMBER_OF_GHOST];
+	private Color[] ghostColors = {Color.cyan, Color.darkGray, Color.pink, Color.red};
+	private Color[] gomeColors = {Color.blue, Color.magenta, Color.orange, Color.green};
+	private Color pacColor = Color.yellow;
+	private double[] scales = {0.3, 0.5, 0.5, 0.5}; 
+	private Direction pacmanDirection;
+	private int[][] blocks;
+	private int[][] gomes;
 	
-	public Drawer() {
-		for(int i = 0; i < width; i+=s) {
-			for(int j = 0; j < height; j+=s) {
-				Color c = Color.white;
-				if(i*j == 0 || i == (width-s) || j == (height-s)) {c = Color.orange;}
-				blocks.add(new Block(new Point(i,j), c));
-			}
-		}
+	
+	public Drawer(int[][] b, int[][] g) {
+		this.setBackground(Color.white);
+		updateMaps(b, g);
 	}
 	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
-		for(Block b: blocks) {
-			g.setColor(b.getColor());
-			g.fillRect(b.getPoint().x, b.getPoint().y, b.getSize(), b.getSize());
+		//Draw the Labyrinthe
+		drawMap(g, s);
+		//Draw the pacman
+		drawPacman(g);
+		//draw the pacghosts
+		for(int i = 0; i < Constante.NUMBER_OF_GHOST;i++) {
+			drawPacghost(g,i);
 		}
+	}
+	
+	public void drawPacman(Graphics g) {
+		g.setColor(pacColor);
+		if(pacmanDirection == Direction.UP) g.fillArc(pacmanPoint.x, pacmanPoint.y, s, s, 125, 290); //Up
+		else if(pacmanDirection == Direction.DOWN) g.fillArc(pacmanPoint.x, pacmanPoint.y, s, s, 305, 290); //Down
+		else if(pacmanDirection == Direction.LEFT) g.fillArc(pacmanPoint.x, pacmanPoint.y, s, s, 215, 290); //Left
+		else g.fillArc(pacmanPoint.x, pacmanPoint.y, s, s, 35, 290); //Right
+	}
+	
+	public void drawPacghost(Graphics g, int i) {
+		g.setColor(ghostColors[i]);
+		int x = ghostPoint[i].x, y = ghostPoint[i].y;
+		int ex = ( x + 6*s/16 ), ey = (y+s/8);
+		int pas = s/4;
+		int[] xpoints = new int[]{x+4*(s/8), 
+						2*(s/8)+x,
+						s/8 + x,
+						s/8 + x,
+						2*(s/8) + x,
+						3*(s/8) + x,
+						4*s/8 + x,
+						5*s/8 + x,
+						6*s/8 + x,
+						7*s/8 + x,
+						7*s/8 + x,
+						6*s/8 + x,
+						};
+		int[] ypoints = new int[]{y,
+						y+s/4,
+						y+s/2,
+						y+3*s/4,
+						y+s,
+						y+3*s/4,
+						y+s,
+						y+3*s/4,
+						y+s,
+						y+3*s/4,
+						y+s/2,
+						y+s/4
+						};
+		Polygon poly = new Polygon(xpoints, ypoints, 12);
+		g.fillPolygon(poly);
 		
 		g.setColor(Color.black);
-		
-		for(int i = 1; i <= nw; i++) {
-			g.drawLine(i*s, 0, i*s, height);
-		}
-		for(int i = 1; i <= nh; i++) {
-			g.drawLine(0, i*s, width, i*s);
-		}
-		
-		//Draw the structure
-		structure.drawStrucure(g, s);
-		//Draw the pacman
-		g.setColor(Color.blue);
-		g.fillOval(pacmanPoint.x, pacmanPoint.y, s, s);
-		
-	
+		g.fillOval(ex, ey, pas, pas);
 	}
 	
-	public List<Block> getBlocks() {
-		return blocks;
+	public void drawMap(Graphics g, int size) {
+		double scale = 0.3;
+		for(int i = 0; i < blocks.length; i++) {
+			for(int j = 0; j < blocks[i].length; j++) {
+				//Blocks
+				if(blocks[i][j] == 1) {
+					g.setColor(Color.black);
+					g.fillRect(j*size, i*size, size, size);
+				}else if(blocks[i][j] == 3) {
+					g.setColor(Color.red);
+					g.drawLine(j*size, i*size, (j+1)*size, i*size);
+				}
+				//Pacgomes
+				int v = gomes[i][j];
+				if(v != 0) {
+					scale = scales[v-1];
+					g.setColor(gomeColors[v-1]);
+					g.fillOval((int) ((j+0.25)*size-scale), (int) ((i+0.25)*size-scale), (int) (size*scale), (int) (size*scale));
+				}
+			}
+		}
 	}
+	
+	public void updateMaps(int[][] b, int[][] g) {
+		blocks = b;
+		gomes = g;
+	}
+	
+
 	public int getBlockSize() {
 		return s;
 	}
-	public int getWidth() {
-		return width;
-	}
-	public int getHeight() {
-		return height;
+	
+	public void setPacmanFeatures(PacMan pac) {
+		pacmanPoint = pac.getPoint();
+		pacmanDirection = pac.getMovement().getCurrent();
+		pacColor = pac.getColor();
 	}
 	
-	public void setPacmanPoint(Point p) {
-		pacmanPoint = p;
+	public void setPacghostPoint(int i, Point p, Color c) {
+		ghostPoint[i] = p;
+		ghostColors[i] = c;
+		
 	}
 	
 }

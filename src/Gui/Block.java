@@ -7,7 +7,7 @@ import java.awt.Point;
 public class Block {
 	protected Point point;
 	protected Color color;
-	protected int SIZE = 10;
+	protected int SIZE = 24;
 	//protected State state;
 	
 	//constructors

@@ -1,36 +1,128 @@
 package PacObject;
 
+import java.awt.Color;
 import java.awt.Point;
-import java.util.List;
+import java.util.Random;
+
+import Constantes.Constante;
+import Utilities.Direction;
+import Utilities.State;
+import Utilities.Utils;
+
 
 public class PacGhost extends AbstractCharacter{
-	private final Point JAIL_POINT = new Point();
-	private final Point OUT_JAIL_POINT = new Point();
-	private static Point START = new Point();
+	int jailTime = 0;
 	
-	public PacGhost(List<Point> b){
-		bounds = b;
-		point = START;
+	public PacGhost(Point p, Color bc){
+		START = Utils.clonePoint(p);
+		point = Utils.clonePoint(p);
+		movement.setCurrent(Direction.UP);
+		state = State.NORMAL;
+		baseColor = bc;
+		color = bc;
 	}
 	
-	public void goToJail() {
-		this.point = JAIL_POINT;
+	public void setStart(Point p) {
+		START = p;		
 	}
-	public void goOutJail() {
-		this.point = OUT_JAIL_POINT;
-	}
+	
 	public void startJailTimeContDown() {
-		//TODO
+		jailTime = Constante.JAIL_TIME_UNIT;
 	}
 	public void SendSignalToReleaseFromJail() {
 		//TODO
 	}
+	public int getVelocity() {
+		return velocity;
+	}
 	
+	public void slowdown() {
+		velocity = Constante.SLOW_VELOCITY;
+		color = Color.blue;
+		unit = Constante.UNIT;
+	}
+	
+	public void toNormal() {
+		velocity = Constante.STD_VELOCITY;
+		color = baseColor;
+	}
+	
+	@Override
+	public void manage() {
+		if(unit >= 0) unit--;
+		else toNormal();
+		
+		if(jailTime > 0) {
+			jailTime--;
+			back2Start();
+		}
+	}
 
 	@Override
 	public void move() {
-		//TODO
+		int x = point.x;
+		int y = point.y;
+		
+		if(movement.getCurrent() == Direction.UP) y-=velocity;
+		else if(movement.getCurrent() == Direction.DOWN) y+=velocity;
+		else if(movement.getCurrent() == Direction.LEFT) x-=velocity;
+		else if(movement.getCurrent() == Direction.RIGHT) x+=velocity;
+		
+		if(collision(x, y)) {
+			movement.setCurrent(getRandomDirection());
+			move();
+			return;
+		}
+		point.x = x;
+		point.y = y;
 	}
 	
+	public void correctBadMove() {
+		if(getVelocity() == Constante.STD_VELOCITY) {
+			int x = point.x, y = point.y;
+			
+			if((x+y) % Constante.STD_VELOCITY == 0) return;
+			
+			setPoint(correctPoint(x, y));
+			
+		}
+	}
+
+	private Point correctPoint(int x, int y) {
+		
+		if(x % Constante.STD_VELOCITY != 0) {
+			if( checkBounds(x + Constante.SLOW_VELOCITY, y) && !collision(x + Constante.SLOW_VELOCITY,y) ) {
+				x += Constante.SLOW_VELOCITY;
+			}else{
+				x -= Constante.SLOW_VELOCITY;
+			}
+		}
+		
+		if(y % Constante.STD_VELOCITY != 0) {
+			if( checkBounds(x, y + Constante.SLOW_VELOCITY) && !collision(x,y + Constante.SLOW_VELOCITY) ) {
+				y += Constante.SLOW_VELOCITY;
+			}else{
+				y -= Constante.SLOW_VELOCITY;
+			}
+		}
+		
+		return new Point(x, y);
+	}
+	
+	@Override
+	public void back2Start() {
+		super.back2Start();
+		movement.setCurrent(Direction.UP);
+		toNormal(); //*************************
+	}
+	
+	public Direction getRandomDirection() {
+		Direction[] choice = {Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT};
+		Random rand = new Random();
+		int n = rand.nextInt(1000) % 4;
+		//System.out.println("Random : "+ n);
+		
+		return choice[n];
+	}	
 	
 }
