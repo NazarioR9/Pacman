@@ -16,10 +16,7 @@ public class Drawer extends JPanel{
 	private final int s = Constante.BLOCK_SIZE;
 	private Point pacmanPoint = new Point();
 	private Point[] ghostPoint = new Point[Constante.NUMBER_OF_GHOST];
-	private Color[] ghostColors = {Color.cyan, Color.darkGray, Color.pink, Color.red};
-	private Color[] gomeColors = {Color.blue, Color.magenta, Color.orange, Color.green};
 	private Color pacColor = Color.yellow;
-	private double[] scales = {0.3, 0.5, 0.5, 0.5}; 
 	private Direction pacmanDirection;
 	private int[][] blocks;
 	private int[][] gomes;
@@ -52,7 +49,7 @@ public class Drawer extends JPanel{
 	}
 	
 	public void drawPacghost(Graphics g, int i) {
-		g.setColor(ghostColors[i]);
+		g.setColor(Constante.GHOSTSCOLORS[i]);
 		int x = ghostPoint[i].x, y = ghostPoint[i].y;
 		int ex = ( x + 6*s/16 ), ey = (y+s/8);
 		int pas = s/4;
@@ -104,8 +101,8 @@ public class Drawer extends JPanel{
 				//Pacgomes
 				int v = gomes[i][j];
 				if(v != 0) {
-					scale = scales[v-1];
-					g.setColor(gomeColors[v-1]);
+					scale = Constante.SCALES[v-1];
+					g.setColor(Constante.GOMESCOLORS[v-1]);
 					g.fillOval((int) ((j+0.25)*size-scale), (int) ((i+0.25)*size-scale), (int) (size*scale), (int) (size*scale));
 				}
 			}
@@ -130,7 +127,7 @@ public class Drawer extends JPanel{
 	
 	public void setPacghostPoint(int i, Point p, Color c) {
 		ghostPoint[i] = p;
-		ghostColors[i] = c;
+		Constante.GHOSTSCOLORS[i] = c;
 		
 	}
 	

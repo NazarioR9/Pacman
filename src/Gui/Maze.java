@@ -7,20 +7,16 @@ import javax.swing.JFrame;
 import Constantes.Constante;
 import PacObject.PacGhost;
 import PacObject.PacMan;
+import Utilities.Utils;
 
 
-public class Labyrinthe {
+public class Maze {
 	private JFrame frame = new JFrame();
-	private Dimension dimension = new Dimension(768,534);
+	private Dimension dimension = Utils.cloneDimension(Constante.DIMENSION, 0, 30);
 	private Drawer drawer;
-	//private MouseListener mlistener = new MouseListener();
-	/* JPanel and JFrame heights differs of 30 because JFrame uses a layout that 
-	 * reduces/modify the size of JPanel so that it can fit in the JFrame.
-	 *  Careful !!
-	 */
 	
 	
-	public Labyrinthe(int[][] b, int[][] g, KeyListener listener, PacMan pac, PacGhost[] ghosts) {
+	public Maze(int[][] b, int[][] g, KeyListener listener, PacMan pac, PacGhost[] ghosts) {
 		drawer = new Drawer(b, g);
 		
 		frame.setTitle("Pacman");
@@ -41,7 +37,12 @@ public class Labyrinthe {
 	
 	public void show(PacMan pac) {
 		setPacmanFeatures(pac);
+		sleep(150);
 		drawer.repaint();
+	}
+	
+	public void close() {
+		frame.dispose();
 	}
 	
 	public void updateMaps(int[][] b, int[][] g) {
@@ -53,8 +54,12 @@ public class Labyrinthe {
 			drawer.setPacghostPoint(i, ghosts[i].getPoint(), ghosts[i].getColor());
 		}
 	}
-
-	public JFrame getFrame() {
-		return frame;
+	
+	public void sleep(int ms) {
+		try {
+			Thread.sleep(ms);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }

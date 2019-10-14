@@ -11,6 +11,7 @@ import Utilities.Utils;
 
 public class PacMan extends AbstractCharacter{
 	private int life;
+	boolean bonus = false;
 
 	public PacMan() {
 		START = new Point(Constante.PAC_START.x,Constante.PAC_START.y);
@@ -65,7 +66,9 @@ public class PacMan extends AbstractCharacter{
 	}
 	
 	public void addLife() {
+		if(bonus) return;
 		life++;
+		bonus = true;
 	}
 	public void loseLife() {
 		life--;

@@ -13,14 +13,13 @@ import Utilities.Utils;
 
 public abstract class AbstractCharacter {
 	protected Point point; //position on the map
-	protected static List<Point> bounds = new ArrayList<>();
 	protected Movement movement  = new Movement(); //contains current and next position
 	protected State state; //state of the object (normal, super, weak)
-	protected int velocity = Constante.STD_VELOCITY;
-	protected Point START;
-	protected Color color;
-	protected Color baseColor;
-	int unit = 0;
+	protected int velocity = Constante.STD_VELOCITY; //speed of the character
+	protected Point START; //starting point on the map
+	protected Color color; //current color of the character
+	protected Color baseColor; //base color
+	int unit = 0; //it defines the duration of an effect 
 	
 	
 	public abstract void move();
@@ -49,11 +48,11 @@ public abstract class AbstractCharacter {
 		return (x >= 0) && (y >= 0) && (x < Constante.DIMENSION.width) && (y < Constante.DIMENSION.height);
 	}
 	
-	public boolean collision(int x, int y) {
+	public boolean collision(int x, int y) {		
+		if(!checkBounds(x,y)) return true;
+		
 		int i = x/Constante.BLOCK_SIZE;
 		int j = y/Constante.BLOCK_SIZE;
-		
-		if(!checkBounds(x,y)) return true;
 		
 		if(Constante.blocksMap[j][i] == 0 || (Constante.blocksMap[j][i] != 1 && movement.getCurrent() == Direction.UP)) {
 			return false;

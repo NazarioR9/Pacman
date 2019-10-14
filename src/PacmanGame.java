@@ -6,7 +6,7 @@ import java.awt.event.KeyListener;
 import javax.swing.JOptionPane;
 
 import Constantes.Constante;
-import Gui.Labyrinthe;
+import Gui.Maze;
 import PacObject.PacGhost;
 import PacObject.PacMan;
 import Utilities.State;
@@ -17,10 +17,9 @@ public class PacmanGame {
 	int score = 0;
 	private PacMan pacman = new PacMan();
 	private PacGhost[] ghosts = new PacGhost[Constante.NUMBER_OF_GHOST];
-	private Color[] ghostColors = {Color.cyan, Color.darkGray, Color.pink, Color.red};
 	private int[][] blocksMatrix;
 	private int[][] gomesMatrix;
-	Labyrinthe laby;
+	Maze maze;
 	public KeyListener listener = new KeyAdapter() {
 		@Override
 		public void keyPressed(KeyEvent e) {
@@ -32,25 +31,24 @@ public class PacmanGame {
 	
 	public PacmanGame(){
 		for(int i = 0; i < Constante.NUMBER_OF_GHOST; i++) {
-			ghosts[i] = new PacGhost( Utils.clonePoint(Constante.GHOSTS_START[i]), ghostColors[i]);
+			ghosts[i] = new PacGhost( Utils.clonePoint(Constante.GHOSTS_START[i]), Constante.GHOSTSCOLORS[i]);
 		}
 		totalReset();
-		laby = new Labyrinthe(Utils.clone2DMatrix(blocksMatrix), Utils.clone2DMatrix(gomesMatrix), listener,
+		maze = new Maze(Utils.clone2DMatrix(blocksMatrix), Utils.clone2DMatrix(gomesMatrix), listener,
 				pacman, ghosts);
 	}
 	
 	public void play() {
 		while(!noMoreGomes() && !noMoreLife()) {
+			maze.setGhostsPoint(ghosts);
+			maze.updateMaps(Utils.clone2DMatrix(blocksMatrix), Utils.clone2DMatrix(gomesMatrix));
+			maze.show(pacman);
 			pacman.manage();
+			manageGhosts();
 			pacman.move();
 			moveGhosts();
-			manageGhosts();
-			laby.setGhostsPoint(ghosts);
-			laby.updateMaps(Utils.clone2DMatrix(blocksMatrix), Utils.clone2DMatrix(gomesMatrix));
-			laby.show(pacman);
 			updateAll();
-			//printScore();
-			sleep(250);
+			printScore();
 		}
 		ask2Play("");
 	}
@@ -62,8 +60,7 @@ public class PacmanGame {
 			totalReset();
 			play();
 		}else if(response.equals("n")) {
-			totalReset();
-			//close window
+			quit();
 		}else {
 			ask2Play("Didn't get ypur response.\n");
 		}
@@ -121,13 +118,14 @@ public class PacmanGame {
 		for(int n = 0; n < Constante.NUMBER_OF_GHOST; n++) {
 			int k = ghosts[n].getMatrixPosition()[0], m = ghosts[n].getMatrixPosition()[1];
 			if(i==k && j==m) {
+				System.out.println("Same pos for Pac and Ghost " + n);
 				if(pacman.getState() == State.SUPER) {
 					ghosts[n].startJailTimeContDown();
 					System.out.println("Ghost " + n +" is in Jail");
 				}else if(pacman.getState() == State.NORMAL) {
-					System.out.println("Ghost " + n + "caught Pacman");
+					System.out.println("Ghost " + n + " caught Pacman");
 					pacman.loseLife();
-					sleep(250);
+					sleep(300);
 					partialReset();
 				}
 			}
@@ -189,5 +187,9 @@ public class PacmanGame {
 	
 	public void printScore() {
 		System.out.println("Your score : "+ score);
+	}
+	
+	public void quit() {
+		maze.close();
 	}
 }
