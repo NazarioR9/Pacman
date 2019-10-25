@@ -11,7 +11,7 @@ import Utilities.Utils;
 
 public class PacMan extends AbstractCharacter{
 	private int life;
-	boolean bonus = false;
+	boolean bonus;
 
 	public PacMan() {
 		START = new Point(Constante.PAC_START.x,Constante.PAC_START.y);
@@ -21,10 +21,12 @@ public class PacMan extends AbstractCharacter{
 		life = Constante.PAC_START_LIFE;
 		baseColor = Color.yellow.darker();
 		color = baseColor;
+		bonus = false;
 	}
 	
 	@Override
-	public void move() {
+	public void move(int index) {
+		this.checkToChangeDirection(index);
 		
 		int x = point.x;
 		int y = point.y;
@@ -35,7 +37,7 @@ public class PacMan extends AbstractCharacter{
 		else if(movement.getCurrent() == Direction.RIGHT) x+=velocity;
 		
 		if(checkBounds(x, y)) {
-			if(collision(x, y)) return;
+			if(collision(index, x, y)) return;
 			point.x = x;
 			point.y = y;
 		}
@@ -85,13 +87,17 @@ public class PacMan extends AbstractCharacter{
 		this.life = life;
 	}
 	
-	public void getKey(int key) {
+	public void getKey(int key, int index) {
 		if(key == KeyEvent.VK_UP) {this.movement.setNext(Direction.UP);}
 		else if(key == KeyEvent.VK_DOWN) {this.movement.setNext(Direction.DOWN);}
 		else if(key == KeyEvent.VK_LEFT) {this.movement.setNext(Direction.LEFT);}
 		else if(key == KeyEvent.VK_RIGHT) {this.movement.setNext(Direction.RIGHT);}
 		
-		this.checkToChangeDirection();
+		this.checkToChangeDirection(index);
+	}
+	
+	public void resetBonus() {
+		bonus = false;
 	}
 
 }

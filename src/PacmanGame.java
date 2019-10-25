@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -14,7 +13,8 @@ import Utilities.Utils;
 
 
 public class PacmanGame {
-	int score = 0;
+	int score;
+	int mapIndex;
 	private PacMan pacman = new PacMan();
 	private PacGhost[] ghosts = new PacGhost[Constante.NUMBER_OF_GHOST];
 	private int[][] blocksMatrix;
@@ -25,7 +25,7 @@ public class PacmanGame {
 		public void keyPressed(KeyEvent e) {
 			super.keyPressed(e);
 			int key = e.getKeyCode();
-			pacman.getKey(key);
+			pacman.getKey(key, mapIndex);
 		}
 	};
 	
@@ -42,14 +42,16 @@ public class PacmanGame {
 		while(!noMoreGomes() && !noMoreLife()) {
 			maze.setGhostsPoint(ghosts);
 			maze.updateMaps(Utils.clone2DMatrix(blocksMatrix), Utils.clone2DMatrix(gomesMatrix));
-			maze.show(pacman);
+			maze.show(pacman, score, pacman.getLife());
 			pacman.manage();
 			manageGhosts();
-			pacman.move();
+			pacman.move(mapIndex);
+			updateAll();
 			moveGhosts();
 			updateAll();
-			printScore();
 		}
+		if(noMoreGomes()) congrats("Congrats !!! You've won the game !!!!");
+		else congrats("You're a loserrrrr !");
 		ask2Play("");
 	}
 	
@@ -65,15 +67,17 @@ public class PacmanGame {
 			ask2Play("Didn't get ypur response.\n");
 		}
 	}
+	public void congrats(String msg) {
+		JOptionPane.showMessageDialog(null, msg, "Infos", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
 	
 	public void totalReset() {
-		pacman.back2Start();
-		for(int i = 0; i < Constante.NUMBER_OF_GHOST; i++) {
-			ghosts[i].back2Start();
-		}
-		blocksMatrix = Utils.clone2DMatrix(Constante.blocksMap);
-		gomesMatrix = Utils.clone2DMatrix(Constante.gomeMap);
+		mapIndex = 0;
+		score = 0;
 		pacman.setLife(Constante.PAC_START_LIFE);
+		partialReset();
+		resetMaps();
 	}
 	
 	public void partialReset() {
@@ -81,7 +85,11 @@ public class PacmanGame {
 		for(int i = 0; i < Constante.NUMBER_OF_GHOST; i++) {
 			ghosts[i].back2Start();
 		}
-		
+	}
+
+	private void resetMaps() {
+		blocksMatrix = Utils.clone2DMatrix(Constante.blocksMaps[mapIndex]);
+		gomesMatrix = Constante.buildGomeMap(mapIndex);
 	}
 	
 	public boolean noMoreGomes() {
@@ -121,7 +129,7 @@ public class PacmanGame {
 				System.out.println("Same pos for Pac and Ghost " + n);
 				if(pacman.getState() == State.SUPER) {
 					ghosts[n].startJailTimeContDown();
-					System.out.println("Ghost " + n +" is in Jail");
+					System.out.println("Ghost " + n + " is in Jail");
 				}else if(pacman.getState() == State.NORMAL) {
 					System.out.println("Ghost " + n + " caught Pacman");
 					pacman.loseLife();
@@ -146,7 +154,11 @@ public class PacmanGame {
 			System.out.println("Super Pacman");
 		}else if(v == 4) {
 			score += 1000;
-			//laby.changeLaby();
+			mapIndex++;
+			mapIndex %= Constante.blocksMaps.length;
+			sleep(100);
+			partialReset();
+			resetMaps();
 		}
 		
 		if(score >= 5000) pacman.addLife();
@@ -161,7 +173,7 @@ public class PacmanGame {
 	
 	public void moveGhosts() {
 		for(int i = 0; i < Constante.NUMBER_OF_GHOST; i++) {
-			ghosts[i].move();
+			ghosts[i].move(mapIndex);
 		}
 	}
 	

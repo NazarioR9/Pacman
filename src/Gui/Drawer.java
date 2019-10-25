@@ -79,7 +79,7 @@ public class Drawer extends JPanel{
 						y+s/2,
 						y+s/4
 						};
-		Polygon poly = new Polygon(xpoints, ypoints, 12);
+		Polygon poly = new Polygon(xpoints, ypoints, xpoints.length);
 		g.fillPolygon(poly);
 		
 		g.setColor(Color.black);

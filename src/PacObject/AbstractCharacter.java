@@ -22,7 +22,7 @@ public abstract class AbstractCharacter {
 	int unit = 0; //it defines the duration of an effect 
 	
 	
-	public abstract void move();
+	public abstract void move(int index);
 	public abstract void manage();
 	
 	public void setColor(Color c) {
@@ -33,10 +33,17 @@ public abstract class AbstractCharacter {
 		return color;
 	}
 	
-	public void checkToChangeDirection() {
+	public void checkToChangeDirection(int index) {
 		if(movement.getNext() != Direction.NONE) {
-			movement.setCurrent(movement.getNext());
-			movement.setNext(Direction.NONE);
+			int x = point.x;
+			int y = point.y;
+			Direction d = movement.getNext();
+			
+			if(!collision(index, x+d.getX(), y+d.getY())) {
+				movement.setCurrent(d);
+				movement.setNext(Direction.NONE);
+			}
+			
 		}
 	}
 	
@@ -48,13 +55,13 @@ public abstract class AbstractCharacter {
 		return (x >= 0) && (y >= 0) && (x < Constante.DIMENSION.width) && (y < Constante.DIMENSION.height);
 	}
 	
-	public boolean collision(int x, int y) {		
+	public boolean collision(int index, int x, int y) {		
 		if(!checkBounds(x,y)) return true;
 		
 		int i = x/Constante.BLOCK_SIZE;
 		int j = y/Constante.BLOCK_SIZE;
 		
-		if(Constante.blocksMap[j][i] == 0 || (Constante.blocksMap[j][i] != 1 && movement.getCurrent() == Direction.UP)) {
+		if(Constante.blocksMaps[index][j][i] == 0 || (Constante.blocksMaps[index][j][i] != 1 && movement.getCurrent() == Direction.UP)) {
 			return false;
 		}
 		

@@ -59,7 +59,7 @@ public class PacGhost extends AbstractCharacter{
 	}
 
 	@Override
-	public void move() {
+	public void move(int index) {
 		int x = point.x;
 		int y = point.y;
 		
@@ -68,9 +68,9 @@ public class PacGhost extends AbstractCharacter{
 		else if(movement.getCurrent() == Direction.LEFT) x-=velocity;
 		else if(movement.getCurrent() == Direction.RIGHT) x+=velocity;
 		
-		if(collision(x, y)) {
+		if(collision(index, x, y)) {
 			movement.setCurrent(getRandomDirection());
-			move();
+			move(index);
 			return;
 		}
 		point.x = x;
@@ -83,15 +83,15 @@ public class PacGhost extends AbstractCharacter{
 			
 			if((x+y) % Constante.STD_VELOCITY == 0) return;
 			
-			setPoint(correctPoint(x, y));
+			setPoint(correctPoint(0, x, y));
 			
 		}
 	}
 
-	private Point correctPoint(int x, int y) {
+	private Point correctPoint(int index, int x, int y) {
 		
 		if(x % Constante.STD_VELOCITY != 0) {
-			if( checkBounds(x + Constante.SLOW_VELOCITY, y) && !collision(x + Constante.SLOW_VELOCITY,y) ) {
+			if( checkBounds(x + Constante.SLOW_VELOCITY, y) && !collision(index, x + Constante.SLOW_VELOCITY,y) ) {
 				x += Constante.SLOW_VELOCITY;
 			}else{
 				x -= Constante.SLOW_VELOCITY;
@@ -99,7 +99,7 @@ public class PacGhost extends AbstractCharacter{
 		}
 		
 		if(y % Constante.STD_VELOCITY != 0) {
-			if( checkBounds(x, y + Constante.SLOW_VELOCITY) && !collision(x,y + Constante.SLOW_VELOCITY) ) {
+			if( checkBounds(x, y + Constante.SLOW_VELOCITY) && !collision(index,x,y + Constante.SLOW_VELOCITY) ) {
 				y += Constante.SLOW_VELOCITY;
 			}else{
 				y -= Constante.SLOW_VELOCITY;

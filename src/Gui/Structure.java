@@ -85,11 +85,13 @@ public class Structure {
 					g.setColor(Color.red);
 					g.drawLine(j*size, i*size, (j+1)*size, i*size);
 				}
+				/*
 				//Pacgomes
 				if(Constante.gomeMap[i][j] == 1) {
 					g.setColor(Color.blue);
 					g.fillOval((int) ((j+0.5)*size-scale), (int) ((i+0.5)*size-scale), (int) (size*scale), (int) (size*scale));
 				}
+				*/
 			}
 		}
 	}
