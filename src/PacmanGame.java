@@ -92,6 +92,11 @@ public class PacmanGame {
 		gomesMatrix = Constante.buildGomeMap(mapIndex);
 	}
 	
+	private void resetMaps(int cnt, int index) {
+		blocksMatrix = Utils.clone2DMatrix(Constante.blocksMaps[mapIndex]);
+		gomesMatrix = Utils.makeGomesForNewMap(blocksMatrix, gomesMatrix, cnt, mapIndex, index);
+	}
+	
 	public boolean noMoreGomes() {
 		for(int i = 0; i < gomesMatrix.length; i++) {
 			for(int j = 0; j < gomesMatrix[0].length; j++) {
@@ -154,11 +159,13 @@ public class PacmanGame {
 			System.out.println("Super Pacman");
 		}else if(v == 4) {
 			score += 1000;
+			int index = mapIndex;
 			mapIndex++;
 			mapIndex %= Constante.blocksMaps.length;
 			sleep(100);
 			partialReset();
-			resetMaps();
+			int cnt = Utils.howMuchBaseGomes(gomesMatrix);
+			resetMaps(cnt, index);
 		}
 		
 		if(score >= 5000) pacman.addLife();

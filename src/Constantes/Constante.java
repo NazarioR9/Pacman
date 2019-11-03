@@ -32,15 +32,15 @@ public class Constante {
 	//public static final Point VERSION_START = new Point(25,20);
 	public static final int NUMBER_OF_GHOST = 4;
 	public static final int PAC_START_LIFE = 3;
-	private static int[][] xs = {
+	public static int[][] xs = {
 			{16, 16, 8, 0, 0, 2, 4, 10},
 			{15, 15, 8, 1, 1, 5, 6, 9}
 	};
-	private static int[][] ys = {
+	public static int[][] ys = {
 			{5, 7, 4, 1, 19, 6, 17, 18},
 			{5, 7, 2, 1, 18, 9, 14, 18}
 	};
-	private static int[][] vs = {
+	public static int[][] vs = {
 			{3, 4,  3,  3, 2,  3, 2, 3},
 			{3, 4,  3,  3, 2,  3, 2, 3}
 	};
@@ -96,11 +96,15 @@ public class Constante {
 			}
 		}
 		//Add specials gomes
+		addSpecialGomes(index, map);
+		
+		return map;
+	}
+
+	public static void addSpecialGomes(int index, int[][] map) {
 		for(int i = 0; i < vs[0].length; i++) {
 			map[xs[index][i]][ys[index][i]] = vs[index][i];
 		}
-		
-		return map;
 	}
 	
 }
