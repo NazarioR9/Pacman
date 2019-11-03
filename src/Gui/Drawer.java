@@ -2,6 +2,7 @@ package Gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 
@@ -93,7 +94,7 @@ public class Drawer extends JPanel{
 				//Blocks
 				if(blocks[i][j] == 1) {
 					g.setColor(Color.black);
-					g.fillRect(j*size, i*size, size, size);
+					g.fill3DRect(j*size, i*size, size, size, true);
 				}else if(blocks[i][j] == 3) {
 					g.setColor(Color.red);
 					g.drawLine(j*size, i*size, (j+1)*size, i*size);
